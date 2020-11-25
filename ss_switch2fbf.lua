@@ -11,7 +11,7 @@ function SS_Switch2FBF:Name()
 end
 
 function SS_Switch2FBF:Version()
-    return '1.0B'
+    return '1.1B'
 end
 
 function SS_Switch2FBF:UILabel()
