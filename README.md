@@ -3,7 +3,7 @@ A simple Moho tool script to convert/translate a set of layers in a Switch group
 
 ### Version ###
 
-*	version: MH12/13 001.0B #501124.01      -- by Sam Cogheil (SimplSam)
+*	version: MH12/13 001.1B #501125.01      -- by Sam Cogheil (SimplSam)
 *	release: n/a
 
 ### How do I get set up ? ###
