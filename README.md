@@ -3,7 +3,7 @@ A simple Moho tool script to convert/translate a set of layers in a Switch group
 
 ### Version ###
 
-*	version: MH12/13 001.0B #501124.01      -- by Sam Cogheil (SimplSam)
+*	version: MH12/13 001.1B #501125.01      -- by Sam Cogheil (SimplSam)
 *	release: n/a
 
 ### How do I get set up ? ###
@@ -19,6 +19,6 @@ A simple Moho tool script to convert/translate a set of layers in a Switch group
   - Select the Switch layer, and run the tool.
   
 * options:  
-  - You can optionally (in code) set:
-    * **fbf_interval** - The Frame by Frame interval. (default: 1)
-    * **sort_by_toptobot** - The translation sort order: true for Top to Bottom (top => 1st frame), false for Bottom to Top (bot => 1st frame). (default: true)
+  - You can optionally (in dialog) set:
+    * **FBF Interval:** - The Frame by Frame interval. (default: 1)
+    * **Start with:** - The translation sort order: _Top Layer_ for Top to Bottom (top => 1st frame), _Bottom Layer_ for Bottom to Top (bot => 1st frame). (default: Top Layer)
