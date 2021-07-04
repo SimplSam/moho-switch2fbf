@@ -1,8 +1,56 @@
 -- -------------------------------
--- Script config
+-- Intro
 -- -------------------------------
 
 ScriptName = "SS_Switch2FBF"
+
+-- SS_Switch2FBF - Convert/translate a set of layers in a Switch group, into a series of Frame-by-Frame frames.
+-- version:	MH12/13 001.2 #5101 - by Sam Cogheil (SimplSam)
+
+--[[ ***** Licence & Warranty *****
+
+	This work is licensed under a GNU General Public License v3.0 license
+	Please see: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+	You can:
+		Usage - Use/Reuse Freely
+		Adapt — remix, transform, and build upon the material for any purpose, even commercially
+		Share — copy and redistribute the material in any medium or format
+
+	Adapt / Share under the following terms:
+		Attribution — You must give appropriate credit, provide a link to the GPL-3.0 license, and
+		indicate if changes were made. You may do so in any reasonable manner, but not in any way
+		that suggests the licensor endorses you or your use.
+
+        ShareAlike — If you remix, transform, or build upon the material, you must distribute your
+        contributions under the same license as this original.
+
+	Warranty:
+
+		Your use of this software material is at your own risk.
+
+		By accepting to use this material you acknowledge that Sam Cogheil / SimplSam
+		("The Developer") make no warranties whatsoever - expressed or implied for the
+		merchantability or fitness for a particular purpose of the software provided.
+
+		The Developer will not be liable for any direct, indirect or consequential loss
+		of actual or anticipated - data, revenue, profits, business, trade or goodwill
+		that is suffered as a result of the use of the software provided.
+
+--]]
+
+
+--[[
+	***** SPECIAL THANKS to:
+	*    Stan (and team) @ MOHO Scripting -- http://mohoscripting.com
+	*    The friendly faces @ Lost Marble Moho forum -- https://www.lostmarble.com/forum
+	*****
+]]
+
+
+-- -------------------------------
+-- Script config
+-- -------------------------------
 
 SS_Switch2FBF = {}
 
@@ -11,7 +59,7 @@ function SS_Switch2FBF:Name()
 end
 
 function SS_Switch2FBF:Version()
-    return '1.1B'
+    return '1.2'
 end
 
 function SS_Switch2FBF:UILabel()
@@ -40,11 +88,10 @@ SS_Switch2FBF_Dialog.UPDATE = MOHO.MSG_BASE
 SS_Switch2FBF_Dialog.SORTTOP = MOHO.MSG_BASE+2
 SS_Switch2FBF_Dialog.SORTBOT = MOHO.MSG_BASE+4
 
-SS_Switch2FBF.fbf_interval = 1          -- Frame by Frame interval
-SS_Switch2FBF.sort_by_toptobot = true   -- If false Bottom to Top
-SS_Switch2FBF.SORTBy = SS_Switch2FBF_Dialog.SORTTOP
-
-SS_Switch2FBF.start_frame  = 1          -- 1st animation frame
+SS_Switch2FBF.fbfInterval = 1         -- Frame by Frame interval
+SS_Switch2FBF.sortByToptobot = true   -- If false Bottom to Top
+SS_Switch2FBF.sortBy = SS_Switch2FBF_Dialog.SORTTOP
+SS_Switch2FBF.startFrame  = 1         -- 1st animation frame
 
 function SS_Switch2FBF_Dialog:new(moho)
     local d = LM.GUI.SimpleDialog("Switch to Frame-by-Frame configuration", SS_Switch2FBF_Dialog)
@@ -76,16 +123,14 @@ function SS_Switch2FBF_Dialog:new(moho)
                     l:AddChild(LM.GUI.StaticText(" - \"Which layer should be the 1st frame?\""), LM.GUI.ALIGN_LEFT)
                 l:Pop()
             l:Pop() --H
-            -- d.currentframe = LM.GUI.CheckBox("Use current frame for start of FBF?...")
-            -- d.setframezero = LM.GUI.CheckBox("Set Frame zero to Switch value of start frame?...")
         l:Pop() --V
     l:Pop() --H
     return d
 end
 
 function SS_Switch2FBF_Dialog:UpdateWidgets()
-    self.interval:SetValue(SS_Switch2FBF.fbf_interval)
-    self.sortbymode:SetChecked(SS_Switch2FBF.SORTBy, true)
+    self.interval:SetValue(SS_Switch2FBF.fbfInterval)
+    self.sortbymode:SetChecked(SS_Switch2FBF.sortBy, true)
     -- self:HandleMessage(self.UPDATE)
 end
 
@@ -97,9 +142,9 @@ function SS_Switch2FBF_Dialog:OnValidate()
 end
 
 function SS_Switch2FBF_Dialog:OnOK()
-    SS_Switch2FBF.fbf_interval = self.interval:IntValue()
-    SS_Switch2FBF.SORTBy = self.sortbymode:FirstCheckedMsg()
-    SS_Switch2FBF.sort_by_toptobot = (SS_Switch2FBF.SORTBy == SS_Switch2FBF_Dialog.SORTTOP)
+    SS_Switch2FBF.fbfInterval = self.interval:IntValue()
+    SS_Switch2FBF.sortBy = self.sortbymode:FirstCheckedMsg()
+    SS_Switch2FBF.sortByToptobot = (SS_Switch2FBF.sortBy == SS_Switch2FBF_Dialog.SORTTOP)
 end
 
 
@@ -109,23 +154,23 @@ end
 
 function SS_Switch2FBF:Run(moho)
 
-    local switch_layer, switch_frame, sublayer_count
-    SS_Switch2FBF.start_frame = moho.document:StartFrame()
+    local switchLayer, switchFrame, sublayerCount
+    SS_Switch2FBF.startFrame = moho.document:StartFrame()
 
 	local dlog = SS_Switch2FBF_Dialog:new(moho)
     if (dlog:DoModal() ~= LM.GUI.MSG_OK) then
 		return false  -- Cancelled so Quit
     end
 
-    switch_layer = moho:LayerAsSwitch(moho.layer)
-    switch_layer:SetFBFLayer(true)
-    sublayer_count = switch_layer:CountLayers() -1
-    for i_sublayer = 0, sublayer_count do
-        switch_frame = SS_Switch2FBF.start_frame + (i_sublayer * SS_Switch2FBF.fbf_interval)
-        if (SS_Switch2FBF.sort_by_toptobot) then
-            switch_layer:SetValue(switch_frame, switch_layer:Layer(sublayer_count - i_sublayer):Name()) -- top to bottom
+    switchLayer = moho:LayerAsSwitch(moho.layer)
+    switchLayer:SetFBFLayer(true)
+    sublayerCount = switchLayer:CountLayers() -1
+    for iSublayer = 0, sublayerCount do
+        switchFrame = SS_Switch2FBF.startFrame + (iSublayer * SS_Switch2FBF.fbfInterval)
+        if (SS_Switch2FBF.sortByToptobot) then
+            switchLayer:SetValue(switchFrame, switchLayer:Layer(sublayerCount - iSublayer):Name()) -- top to bottom
         else
-            switch_layer:SetValue(switch_frame, switch_layer:Layer(i_sublayer):Name()) -- bottom to top
+            switchLayer:SetValue(switchFrame, switchLayer:Layer(iSublayer):Name()) -- bottom to top
         end
     end
 
